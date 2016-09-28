@@ -80,12 +80,16 @@ func main() {
 	if *method == "POST" || *method == "PUT" {
 		if strings.HasPrefix(*body, "@") {
 			filename := (*body)[1:len(*body)]
-			text, err := ioutil.ReadFile(filename)
-			if err != nil {
-				fmt.Printf("Cannot read file %s: %s\n", filename, err)
-				os.Exit(1)
+			if filename == "-" {
+				buf = os.Stdin
+			} else {
+				text, err := ioutil.ReadFile(filename)
+				if err != nil {
+					fmt.Printf("Cannot read file %s: %s\n", filename, err)
+					os.Exit(1)
+				}
+				buf = bytes.NewReader(text)
 			}
-			buf = bytes.NewReader(text)
 		} else {
 			buf = strings.NewReader(*body)
 		}
